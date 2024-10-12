@@ -150,3 +150,13 @@ customer_id int not null,
 primary key (id),
 foreign key (customer_id) references customer(id)
 );
+
+select *, sum(shipment_product.quantity) from product
+join shipment_product on shipment_product.product_id = product.id
+group by product.id
+order by sum(shipment_product.quantity) asc
+limit 5;
+
+select * from product
+join shipment_product on shipment_product.product_id = product.id;
+

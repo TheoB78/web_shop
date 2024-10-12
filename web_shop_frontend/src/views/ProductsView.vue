@@ -13,13 +13,14 @@
         @click="goToSingleView(product.id)"
       >
         <img class="img-fluid" :src="`/src/assets/${product.image_path}`" />
-        <div class="card-header">
+        <h4 class="card-header">
           {{ product.product_name }}
-        </div>
+        </h4>
         <div class="card-body">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">{{ product.price }}€</li>
-          </ul>
+          <p class="card-text">
+            {{ product.description }}
+          </p>
+          <h5>{{ product.price }}€</h5>
         </div>
       </div>
     </div>

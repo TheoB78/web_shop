@@ -46,22 +46,87 @@
     <div class="modal" tabindex="-1" role="dialog" v-if="isModalVisible">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Modal title</h5>
-            <button type="button" class="close" @click="hideModal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>This is a Bootstrap modal in Vue.js!</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="hideModal">Close</button>
-            <button type="button" class="btn btn-primary">Bestellung abschließen</button>
-          </div>
+          <form>
+            <div class="modal-header">
+              <h5 class="modal-title">Bestellung</h5>
+            </div>
+
+            <div class="modal-body">
+              <label for="first_name">Vorname:</label>
+              <input
+                v-model="shipping_address.first_name"
+                id="first_name"
+                type="text"
+                class="form-control"
+                required
+              />
+              <label for="last_name">Nachname:</label>
+              <input
+                v-model="shipping_address.last_name"
+                id="last_name"
+                type="text"
+                class="form-control"
+                required
+              />
+              <label for="street">Straße:</label>
+              <input
+                v-model="shipping_address.street"
+                id="street"
+                type="text"
+                class="form-control"
+                required
+              />
+              <label for="city">Stadt:</label>
+              <input
+                v-model="shipping_address.city"
+                id="city"
+                type="text"
+                class="form-control"
+                required
+              />
+              <label for="country">Land:</label>
+              <input
+                v-model="shipping_address.country"
+                id="country"
+                type="text"
+                class="form-control"
+                required
+              />
+              <label for="postal_code">PLZ:</label>
+              <input
+                v-model="shipping_address.postal_code"
+                id="postal_code"
+                type="text"
+                class="form-control"
+                required
+              />
+              <label for="email">Email:</label>
+              <input
+                v-model="customer.email"
+                id="email"
+                type="email"
+                class="form-control"
+                required
+              />
+              <label for="phone">Telefonnummer:</label>
+              <input
+                v-model="customer.phone_number"
+                id="phone"
+                type="tel"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="hideModal">Close</button>
+              <button type="submit" class="btn btn-primary" @click="orderItems">
+                Bestellung abschließen
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-      <div class="modal-backdrop fade" @click="hideModal"></div>
+      <div class="fade" @click="hideModal"></div>
     </div>
   </div>
 </template>
@@ -69,15 +134,31 @@
 <script setup lang="ts">
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import { ref, onMounted, computed } from 'vue'
-import ProductService from '@/services/ProductService'
 import Product from '@/models/Product'
 import Shipment_product from '@/models/Shipment_product'
 import Shipment from '@/models/Shipment'
 import ShipmentService from '@/services/ShipmentService'
+import Address from '@/models/Address'
+import Customer from '@/models/Customer'
 
 let cart_items = ref(new Array())
 const shipmentService = new ShipmentService()
 let isModalVisible = ref(false)
+
+let customer = ref({
+  email: '',
+  phone_number: '',
+  billing_address: {}
+})
+
+let shipping_address = ref({
+  first_name: '',
+  last_name: '',
+  street: '',
+  city: '',
+  country: '',
+  postal_code: ''
+})
 
 onMounted(() => {
   getItems()
@@ -96,16 +177,20 @@ function getItems() {
 }
 
 function orderItems() {
-  let shipment
+  customer.value.billing_address = shipping_address.value
   let data = {
-    date: new Date(),
-    shipment_items: cart_items.value
+    shipmentProducts: [],
+    shipping_address: new Address(shipping_address.value),
+    customer: new Customer(customer.value)
   }
 
-  shipment = new Shipment(data)
+  for (const shipmentProduct of cart_items.value) {
+    data.shipmentProducts.push(new Shipment_product(shipmentProduct))
+  }
+
+  const shipment = new Shipment(data)
 
   shipmentService.addShipment(shipment)
-  console.log(shipment)
 }
 
 // calculates total cost of items and their quantity
