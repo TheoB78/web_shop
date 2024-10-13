@@ -118,7 +118,7 @@
               />
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" @click="hideModal">Close</button>
+              <button type="button" class="btn btn-secondary" @click="hideModal">schließen</button>
               <button type="submit" class="btn btn-primary" @click="orderItems">
                 Bestellung abschließen
               </button>
@@ -222,10 +222,6 @@ function hideModal() {
 </script>
 
 <style>
-.item-row {
-  border-bottom: solid 1px grey;
-  margin-bottom: 30px;
-}
 .price {
   float: right;
 }
