@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -29,7 +32,7 @@ public class Shipment {
     private Customer customer;
 
     @CreationTimestamp
-    private Timestamp shipment_date;
+    private LocalDateTime shipment_date;
 
     @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL)
     private List<Shipment_product> shipmentProducts;

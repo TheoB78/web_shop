@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    @Query( value = "select new ProductStatisticResult(p.id, sp.id, sum(sp.quantity) as amount, p.product_name, p.image_path)"
-            + " from Product p, Shipment_product sp "
-            + " where p.id = sp.product.id "
+    @Query( value = "select new ProductStatisticResult(p.id, sp.id, coalesce(sum(sp.quantity), 0) as amount, p.product_name, p.image_path)"
+            + " from Shipment_product sp "
+            + " right join sp.product p "
             + " group by p.id, p.product_name, p.image_path ")
     List<ProductStatisticResult> getTopProducts(Pageable pageable);
 
