@@ -4,14 +4,14 @@ import Customer from './Customer'
 
 export default class Shipment {
   id: Number
-  shipment_date: Date
+  shipmentDate: Date
   shipmentProducts: Shipment_product[]
   shipping_address: Address
   customer: Customer
 
   constructor(data: any) {
     this.id = data.id
-    this.shipment_date = data.date
+    this.shipmentDate = data.date
     this.shipping_address = new Address(data.shipping_address)
     this.customer = new Customer(data.customer)
 

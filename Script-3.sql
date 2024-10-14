@@ -14,17 +14,16 @@ primary key (id)
 );
 
 INSERT INTO web_shop.product (product_name, price, description, image_path) VALUES
-("Echo Dot (3rd Gen) - Smart speaker with Alexa - Charcoal", 39.99, "Our most popular smart speaker - Now with improved sound and a new design. Ask Alexa for music, news, information, and more.", "echo_dot_3rd_gen.jpg"),
-("All-new Fire HD 8 tablet, 8'' HD display, 32 GB, designed for portable entertainment", 89.99, "Enjoy your favorite apps, games, and videos on our most popular tablet - Now with longer battery life and faster performance.", "fire_hd_8_tablet.jpg"),
-("Apple Watch Series 6 GPS, 44mm", 399.00, "The future of health is on your wrist - Measure your blood oxygen level, take an ECG, and track your fitness with the new Apple Watch Series 6.", "apple_watch_series_6.jpg"),
-("Samsung Galaxy S21 5G Factory Unlocked Android Cell Phone, 128GB, Phantom Gray", 799.99, "Experience the power of 5G with the new Samsung Galaxy S21 - Featuring a pro-grade camera, all-day battery, and a bold new design.", "samsung_galaxy_s21.jpg"),
-("Kindle Paperwhite Signature Edition Essentials Bundle", 239.97, "The best Kindle Paperwhite yet - Now with a larger 6.8'' display, adjustable warm light, and wireless charging.", "kindle_paperwhite_signature.jpg"),
-("Sony WH-1000XM4 Wireless Industry Leading Noise Canceling Overhead Headphones", 349.99, "The world's best noise canceling headphones - Now with improved sound quality, voice assistant compatibility, and up to 30 hours of battery life.", "default.jpg"),
-("Nintendo Switch with Neon Blue and Neon Red Joy-Con", 299.99, "Play your favorite games anytime, anywhere - The Nintendo Switch is the ultimate gaming console for on-the-go fun.", "default.jpg"),
-("Bose QuietComfort Earbuds - True Wireless Bluetooth Noise Cancelling Earphones", 279.00, "The world's best noise cancelling earbuds - Featuring unmatched comfort, sound quality, and up to 18 hours of battery life.", "default.jpg"),
-("Apple AirPods Pro", 249.00, "Active noise cancellation for immersive sound - Transparency mode for hearing and connecting with the world around you.", "default.jpg"),
-("Google Pixelbook Go - Lightweight Chrome Laptop", 649.00, "The lightweight Chromebook that's easy to take anywhere - Featuring a 13.3'' touchscreen, up to 12 hours of battery life, and fast charging.", "default.jpg");
-
+("Echo Dot (3rd Gen)", 39.99, "Our most popular smart speaker with improved sound. Ask Alexa for music, news, and more.", "echo_dot_3rd_gen.jpg"),
+("Fire HD 8 Tablet", 89.99, "Enjoy apps, games, and videos on our most popular tablet with longer battery life.", "fire_hd_8_tablet.jpg"),
+("Apple Watch Series 6", 399.00, "Measure blood oxygen, take ECG, and track fitness with the new Apple Watch.", "apple_watch_series_6.jpg"),
+("Samsung Galaxy S21 5G", 799.99, "Experience 5G power with a pro-grade camera and all-day battery.", "samsung_galaxy_s21.jpg"),
+("Kindle Paperwhite Signature", 239.97, "The best Kindle yet with a larger display, adjustable warm light, and wireless charging.", "kindle_paperwhite_signature.jpg"),
+("Sony WH-1000XM4 Headphones", 349.99, "Industry-leading noise canceling headphones with improved sound and 30 hours of battery.", "default.jpg"),
+("Nintendo Switch", 299.99, "Play games anytime, anywhere with the ultimate on-the-go gaming console.", "default.jpg"),
+("Bose QuietComfort Earbuds", 279.00, "Best noise cancelling earbuds with unmatched comfort and 18 hours of battery.", "default.jpg"),
+("Apple AirPods Pro", 249.00, "Active noise cancellation and transparency mode for immersive sound.", "default.jpg"),
+("Google Pixelbook Go", 649.00, "Lightweight Chromebook with a 13.3'' touchscreen and up to 12 hours of battery.", "default.jpg");
 create table web_shop.product_property (
 id int not null auto_increment,
 product_id int not null,
@@ -122,6 +121,8 @@ values
 (4, 4),
 (5, 5);
 
+select * from shipment;
+
 create table shipment_product (
 id int not null auto_increment,
 shipment_id int not null,
@@ -143,6 +144,8 @@ values
 (5, 8, 4),
 (6, 6, 6);
 
+select * from shiproduct_idpment_product;
+
 create table account (
 id int not null auto_increment,
 account_password varchar(255) not null,
@@ -151,12 +154,12 @@ primary key (id),
 foreign key (customer_id) references customer(id)
 );
 
-select *, sum(shipment_product.quantity) from product
-join shipment_product on shipment_product.product_id = product.id
+select *, coalesce(sum(shipment_product.quantity), 0) from product
+left join shipment_product on shipment_product.product_id = product.id
 group by product.id
-order by sum(shipment_product.quantity) asc
-limit 5;
+order by sum(shipment_product.quantity) asc;
 
 select * from product
 join shipment_product on shipment_product.product_id = product.id;
 
+select * from product_statistic_result;

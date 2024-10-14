@@ -36,6 +36,7 @@ a,
     display: grid;
     grid-template-columns: 1fr 1fr;
     max-width: 1000px;
+    margin: auto;
     /* padding: 0 2rem; */
   }
 }
@@ -43,5 +44,6 @@ a,
 @media (max-width: 1024px) {
   .grid-view {
     max-width: 500px;
+    margin: auto;
   }
 }

@@ -9,11 +9,9 @@ import lombok.Setter;
 
 class IdClass {
     private Integer product_id;
-    private Integer shipment_product_id;
 
-    public IdClass(Integer product_id, Integer shipment_product_id) {
+    public IdClass(Integer product_id) {
         this.product_id = product_id;
-        this.shipment_product_id = shipment_product_id;
     }
 }
 @Getter
@@ -21,13 +19,9 @@ class IdClass {
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@jakarta.persistence.IdClass(IdClass.class)
 public class ProductStatisticResult {
     @Id
     private Integer product_id;
-
-    @Id
-    private Integer shipment_product_id;
 
     private Long amount;
 

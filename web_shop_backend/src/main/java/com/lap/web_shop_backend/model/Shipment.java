@@ -31,8 +31,9 @@ public class Shipment {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @Column(name = "shipment_date")
     @CreationTimestamp
-    private LocalDateTime shipment_date;
+    private LocalDateTime shipmentDate;
 
     @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL)
     private List<Shipment_product> shipmentProducts;

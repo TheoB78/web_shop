@@ -15,7 +15,7 @@
           <h4>{{ item.product.product_name }}</h4>
           <h5 class="">{{ item.product.price }} €</h5>
           <div class="row">
-            <label for="quantity" class="col-sm-1 col-form-label">Anzahl:</label>
+            <label for="quantity" class="col-form-label">Anzahl:</label>
             <div class="col-md-2">
               <input
                 v-model="item.quantity"
@@ -26,11 +26,9 @@
                 min="1"
               />
             </div>
-          </div>
-          <div class="row">
             <button
               type="button"
-              class="col-md-2 btn btn-primary"
+              class="col-md-2 btn btn-danger"
               @click="removeFromCart(item.product)"
             >
               Entfernen
@@ -46,12 +44,21 @@
     <div class="modal" tabindex="-1" role="dialog" v-if="isModalVisible">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <form>
+          <form @submit.prevent="orderItems" novalidate>
             <div class="modal-header">
               <h5 class="modal-title">Bestellung</h5>
             </div>
 
             <div class="modal-body">
+              <h5>Lieferaddresse</h5>
+              <label for="addressCheckbox">Als Rechnungsaddresse übernehmen</label>
+              <input
+                class="form-check-input"
+                style="display: block"
+                type="checkbox"
+                v-model="useShippingAddressAsBillingAddress"
+                id="addressCheckbox"
+              />
               <label for="first_name">Vorname:</label>
               <input
                 v-model="shipping_address.first_name"
@@ -100,6 +107,57 @@
                 class="form-control"
                 required
               />
+              <div v-if="!useShippingAddressAsBillingAddress">
+                <h5>Zahlungsaddresse</h5>
+                <label for="first_name">Vorname:</label>
+                <input
+                  v-model="billing_address.first_name"
+                  id="first_name"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+                <label for="last_name">Nachname:</label>
+                <input
+                  v-model="billing_address.last_name"
+                  id="last_name"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+                <label for="street">Straße:</label>
+                <input
+                  v-model="billing_address.street"
+                  id="street"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+                <label for="city">Stadt:</label>
+                <input
+                  v-model="billing_address.city"
+                  id="city"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+                <label for="country">Land:</label>
+                <input
+                  v-model="billing_address.country"
+                  id="country"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+                <label for="postal_code">PLZ:</label>
+                <input
+                  v-model="billing_address.postal_code"
+                  id="postal_code"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+              </div>
               <label for="email">Email:</label>
               <input
                 v-model="customer.email"
@@ -119,9 +177,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="hideModal">schließen</button>
-              <button type="submit" class="btn btn-primary" @click="orderItems">
-                Bestellung abschließen
-              </button>
+              <button type="submit" class="btn btn-primary">Bestellung abschließen</button>
             </div>
           </form>
         </div>
@@ -144,6 +200,7 @@ import Customer from '@/models/Customer'
 let cart_items = ref(new Array())
 const shipmentService = new ShipmentService()
 let isModalVisible = ref(false)
+let useShippingAddressAsBillingAddress = ref(true)
 
 let customer = ref({
   email: '',
@@ -152,6 +209,15 @@ let customer = ref({
 })
 
 let shipping_address = ref({
+  first_name: '',
+  last_name: '',
+  street: '',
+  city: '',
+  country: '',
+  postal_code: ''
+})
+
+let billing_address = ref({
   first_name: '',
   last_name: '',
   street: '',
@@ -177,7 +243,37 @@ function getItems() {
 }
 
 function orderItems() {
-  customer.value.billing_address = shipping_address.value
+  for (const input in shipping_address.value) {
+    if (shipping_address.value[input].length == 0) {
+      alert('Bitte alle Felder ausfüllen')
+      return
+    }
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  if (!emailRegex.test(customer.value.email.toLowerCase())) {
+    alert('Ungültige Email-Addresse')
+    return
+  }
+
+  const phoneRegex = /^\+?[0-9\s\-$$]+$/
+
+  if (!phoneRegex.test(customer.value.phone_number)) {
+    alert('Ungültige Telephonnummer')
+    return
+  }
+
+  if (!useShippingAddressAsBillingAddress.value) {
+    for (const input in billing_address.value) {
+      if (billing_address.value[input].length == 0) {
+        alert('Bitte alle Felder ausfüllen')
+        return
+      }
+    }
+    customer.value.billing_address = billing_address
+  } else customer.value.billing_address = shipping_address.value
+
   let data = {
     shipmentProducts: [],
     shipping_address: new Address(shipping_address.value),
@@ -190,7 +286,11 @@ function orderItems() {
 
   const shipment = new Shipment(data)
 
-  shipmentService.addShipment(shipment)
+  shipmentService.addShipment(shipment).then((response) => {
+    console.log(response)
+    alert('Bestellung abgeschlossen')
+    localStorage.clear()
+  })
 }
 
 // calculates total cost of items and their quantity
@@ -204,6 +304,7 @@ const totalCosts = computed(() => {
   return costs
 })
 
+//removes passed product from cart
 function removeFromCart(product: Product) {
   cart_items.value = cart_items.value.filter((item) => item.product.id !== product.id)
 

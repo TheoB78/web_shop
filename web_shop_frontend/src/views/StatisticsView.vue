@@ -1,10 +1,9 @@
 <template>
   <HeaderComponent></HeaderComponent>
   <div class="view">
-    <button @click="debug"></button>
+    <h3>Die 5 beliebtesten Produkte</h3>
     <div v-if="!top5Products">Laden</div>
     <div v-else>
-      <h3>Die 5 beliebtesten Produkte</h3>
       <div
         @click="goToSingleView(topProduct.product_id)"
         class="item-row row"
@@ -21,9 +20,9 @@
         </div>
       </div>
     </div>
-    <div v-if="!top5Products">Laden</div>
+    <h3>Die 5 unbeliebtesten Produkte</h3>
+    <div v-if="!bottom5Products">Laden</div>
     <div v-else>
-      <h3>Die 5 unbeliebtesten Produkte</h3>
       <div
         @click="goToSingleView(bottomProduct.product_id)"
         class="item-row row"
@@ -40,6 +39,13 @@
         </div>
       </div>
     </div>
+    <h3>Lieferungen der letzten 4 Wochen</h3>
+    <div v-if="!shipments">Laden</div>
+    <div v-else>
+      <div v-bind:key="shipment.id" v-for="shipment in shipments">
+        {{ shipment }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,11 +53,14 @@
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import router from '@/router'
 import ProductService from '@/services/ProductService'
+import ShipmentService from '@/services/ShipmentService'
 import { onMounted, ref } from 'vue'
 
 let productService = new ProductService()
+let shipmentService = new ShipmentService()
 let top5Products = ref()
 let bottom5Products = ref()
+let shipments = ref()
 
 onMounted(() => {
   getStatistics()
@@ -63,11 +72,12 @@ function debug() {
 }
 
 function getStatistics() {
+  //top 5 products
   productService.getProductStatistics().then((response) => (top5Products.value = response))
-
+  //bottom 5 products
   productService.getProductStatistics(true).then((response) => (bottom5Products.value = response))
-
-  //todo alle bestellungen letzten 4 wochen
+  //shipments of last 4 weeks
+  shipmentService.getShipmentAfterDays(28).then((response) => (shipments.value = response))
 }
 
 function goToSingleView(id: number) {

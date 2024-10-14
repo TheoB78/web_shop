@@ -3,12 +3,12 @@ package com.lap.web_shop_backend.controller;
 import com.lap.web_shop_backend.model.Shipment;
 import com.lap.web_shop_backend.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ShipmentController {
@@ -18,6 +18,11 @@ public class ShipmentController {
     @GetMapping(path = "/shipments")
     public List<Shipment> getAllShipments() {
         return shipmentService.findAll();
+    }
+
+    @GetMapping(path = "/shipment")
+    public Optional<Shipment> getShipmentById(@RequestParam Integer id) {
+        return shipmentService.findById(id);
     }
 
     @PostMapping(path = "/addShipment")
@@ -32,5 +37,10 @@ public class ShipmentController {
         //shipment.getCustomer().setShipments(customersShipments);
 
         return shipmentService.save(shipment);
+    }
+
+    @GetMapping(path = "/shipmentAfterDate")
+    public List<Shipment> getShipmentAfterDays(@RequestParam Integer days) {
+        return shipmentService.findByShipmentDateBetween(LocalDateTime.now().minusDays(days));
     }
 }

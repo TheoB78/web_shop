@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    @Query( value = "select new ProductStatisticResult(p.id, sp.id, coalesce(sum(sp.quantity), 0) as amount, p.product_name, p.image_path)"
+    @Query( value = "select new ProductStatisticResult(p.id, coalesce(sum(sp.quantity), 0) as amount, p.product_name, p.image_path)"
             + " from Shipment_product sp "
             + " right join sp.product p "
             + " group by p.id, p.product_name, p.image_path ")
